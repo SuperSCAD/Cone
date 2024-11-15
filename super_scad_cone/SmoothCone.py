@@ -35,20 +35,20 @@ class SmoothCone(ScadWidget):
                  top_outer_profile: SmoothProfileFactory | None = None,
                  bottom_outer_profile: SmoothProfileFactory | None = None,
                  bottom_inner_profile: SmoothProfileFactory | None = None,
-                 top_extend_by_eps: bool | None = None,
-                 outer_extend_by_eps: bool | None = None,
-                 bottom_extend_by_eps: bool | None = None,
-                 inner_extend_by_eps: bool | None = None,
+                 top_extend_by_eps: bool = False,
+                 outer_extend_by_eps: bool = False,
+                 bottom_extend_by_eps: bool = False,
+                 inner_extend_by_eps: bool = False,
                  rotate_extrude_angle: float = 360.0,
                  convexity: int | None = None,
                  fa: float | None = None,
                  fs: float | None = None,
                  fn: int | None = None,
-                 fn4n: bool | None = None):
+                 fn4n: bool = False):
         """
         Object constructor.
 
-        :param height: The height of the cone or cylinder.
+        :param height: The height of the cone.
         :param top_radius: The radius at the top of the cone.
         :param top_diameter: The diameter at the top of the cone.
         :param top_outer_radius: The radius at the top of the outer cone.
@@ -84,6 +84,147 @@ class SmoothCone(ScadWidget):
         """
         ScadWidget.__init__(self, args=locals())
 
+        self._height: float = height
+        """
+        The height of the cone.
+        """
+
+        self._top_radius: float | None = top_radius
+        """
+        The radius of the top of the cone.
+        """
+
+        self._top_diameter: float | None = top_diameter
+        """
+        The diameter of the top of the cone.
+        """
+
+        self._top_outer_radius: float | None = top_outer_radius
+        """
+        The radius of the top of the outer cone.
+        """
+
+        self._top_outer_diameter: float | None = top_outer_diameter
+        """
+        The diameter of the top of the outer cone.
+        """
+
+        self._top_inner_radius: float | None = top_inner_radius
+        """
+        The radius of the top of the inner cone.
+        """
+
+        self._top_inner_diameter: float | None = top_inner_diameter
+        """
+        The diameter of the top of the inner cone.
+        """
+
+        self._bottom_radius: float | None = bottom_radius
+        """
+        The radius of the bottom of the cone.
+        """
+
+        self._bottom_diameter: float | None = bottom_diameter
+        """
+        The diameter of the bottom of the cone.
+        """
+
+        self._bottom_outer_radius: float | None = bottom_outer_radius
+        """
+        The radius of the bottom of the outer cone.
+        """
+
+        self._bottom_outer_diameter: float | None = bottom_outer_diameter
+        """
+        The diameter of the bottom of the outer cone.
+        """
+
+        self._bottom_inner_radius: float | None = bottom_inner_radius
+        """
+        The radius of the bottom of the inner cone.
+        """
+
+        self._bottom_inner_diameter: float | None = bottom_inner_diameter
+        """
+        The diameter of the bottom of the inner cone.
+        """
+
+        self._center: bool = center
+        """
+        Whether the cylinder is centered in the z-direction.
+        """
+
+        self._top_inner_profile: SmoothProfileFactory = top_inner_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the inner top of the cone.
+        """
+
+        self._top_outer_profile: SmoothProfileFactory = top_outer_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the outer top of the cone.
+        """
+
+        self._bottom_outer_profile: SmoothProfileFactory = bottom_outer_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the outer bottom of the cone.
+        """
+
+        self._bottom_inner_profile: SmoothProfileFactory = bottom_inner_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the inner bottom of the cone.
+        """
+
+        self._top_extend_by_eps: bool = top_extend_by_eps
+        """
+        Whether to extend the top of the cone by eps for a clear overlap.
+        """
+
+        self._outer_extend_by_eps: bool = outer_extend_by_eps
+        """
+        Whether to extend the outer wall of the cone by eps for a clear overlap.
+        """
+
+        self._bottom_extend_by_eps: bool = bottom_extend_by_eps
+        """
+        Whether to extend the bottom of the cone by eps for a clear overlap.
+        """
+
+        self._inner_extend_by_eps: bool = inner_extend_by_eps
+        """
+        Whether to extend the inner wall of the cone by eps for a clear overlap.
+        """
+
+        self._rotate_extrude_angle: float = rotate_extrude_angle
+        """
+        Specifies the number of degrees to sweep, starting at the positive X axis.  The direction of the sweep follows
+        the Right-Hand Rule, hence a negative angle sweeps clockwise.
+        """
+
+        self._convexity: int | None = convexity
+        """
+        The convexity of the cone.
+        """
+
+        self._fa: float | None = fa
+        """
+        The minimum angle (in degrees) of each fragment.
+        """
+
+        self._fs: float | None = fs
+        """
+        The minimum circumferential length of each fragment.
+        """
+
+        self._fn: int | None = fn
+        """
+        The fixed number of fragments in 360 degrees. Values of 3 or more override fa and fs.
+        """
+
+        self._fn4n: bool = fn4n
+        """
+        Whether to create a cone with a multiple of 4 vertices.
+        """
+
     # ------------------------------------------------------------------------------------------------------------------
     def _validate_arguments(self) -> None:
         """
@@ -115,7 +256,7 @@ class SmoothCone(ScadWidget):
         """
         Returns whether the cone is centered along the z-as.
         """
-        return self._args['center']
+        return self._center
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -123,7 +264,7 @@ class SmoothCone(ScadWidget):
         """
         Returns whether the top of the cone is extended by eps.
         """
-        return self._args.get('top_extend_by_eps', False)
+        return self._top_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -131,7 +272,7 @@ class SmoothCone(ScadWidget):
         """
         Returns whether the outer wall of the cone is extended by eps.
         """
-        return self._args.get('outer_extend_by_eps', False)
+        return self._outer_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -139,7 +280,7 @@ class SmoothCone(ScadWidget):
         """
         Returns whether the bottom of the cone is extended (outwards) by eps.
         """
-        return self._args.get('bottom_extend_by_eps', False)
+        return self._bottom_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -147,7 +288,7 @@ class SmoothCone(ScadWidget):
         """
         Returns whether the inner wall of the cone is extended (inwards) by eps.
         """
-        return self._args.get('inner_extend_by_eps', False)
+        return self._inner_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -155,10 +296,11 @@ class SmoothCone(ScadWidget):
         """
         Returns the top outer radius of the cone.
         """
-        return self.uc(self._args.get('top_outer_radius',
-                                      self._args.get('top_radius',
-                                                     0.5 * self._args.get('top_outer_diameter',
-                                                                          self._args.get('top_diameter', 0.0)))))
+        if self._top_outer_radius is None:
+            self._top_outer_radius = self._top_radius or \
+                                     0.5 * (self._top_outer_diameter or self._top_diameter or 0.0)
+
+        return self._top_outer_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -166,10 +308,11 @@ class SmoothCone(ScadWidget):
         """
         Returns the top outer diameter of the cone.
         """
-        return self.uc(self._args.get('top_outer_diameter',
-                                      self._args.get('top_diameter',
-                                                     2.0 * self._args.get('top_outer_radius',
-                                                                          self._args.get('top_radius', 0.0)))))
+        if self._top_outer_diameter is None:
+            self._top_outer_diameter = self._top_diameter or \
+                                       2.0 * (self._top_outer_radius or self._top_radius or 0.0)
+
+        return self._top_outer_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -177,7 +320,10 @@ class SmoothCone(ScadWidget):
         """
         Returns the top inner radius of the cone.
         """
-        return self.uc(self._args.get('top_inner_radius', 0.5 * self._args.get('top_inner_diameter', 0.0)))
+        if self._top_inner_radius is None:
+            self._top_inner_radius = 0.5 * (self._top_inner_diameter or 0.0)
+
+        return self._top_inner_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -185,7 +331,10 @@ class SmoothCone(ScadWidget):
         """
         Returns the top inner diameter of the cone.
         """
-        return self.uc(self._args.get('top_inner_diameter', 2.0 * self._args.get('top_inner_radius', 0.0)))
+        if self._top_inner_diameter is None:
+            self._top_inner_diameter = 2.0 * (self._top_inner_radius or 0.0)
+
+        return self._top_inner_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -193,10 +342,11 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom outer radius of the cone.
         """
-        return self.uc(self._args.get('bottom_outer_radius',
-                                      self._args.get('bottom_radius',
-                                                     0.5 * self._args.get('bottom_outer_diameter',
-                                                                          self._args.get('bottom_diameter', 0.0)))))
+        if self._bottom_outer_radius is None:
+            self._bottom_outer_radius = self._bottom_radius or \
+                                        0.5 * (self._bottom_outer_diameter or self._bottom_diameter or 0.0)
+
+        return self._bottom_outer_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -204,10 +354,11 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom outer diameter of the cone.
         """
-        return self.uc(self._args.get('bottom_outer_diameter',
-                                      self._args.get('bottom_diameter',
-                                                     2.0 * self._args.get('bottom_outer_radius',
-                                                                          self._args.get('bottom_radius', 0.0)))))
+        if self._bottom_outer_diameter is None:
+            self._bottom_outer_diameter = self._bottom_diameter or \
+                                          2.0 * (self._bottom_outer_radius or self._bottom_radius or 0.0)
+
+        return self._bottom_outer_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -215,7 +366,10 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom inner radius of the cone.
         """
-        return self.uc(self._args.get('bottom_inner_radius', 0.5 * self._args.get('bottom_inner_diameter', 0.0)))
+        if self._bottom_inner_radius is None:
+            self._bottom_inner_radius = 0.5 * (self._bottom_inner_diameter or 0.0)
+
+        return self._bottom_inner_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -223,7 +377,10 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom inner diameter of the cone.
         """
-        return self.uc(self._args.get('bottom_inner_diameter', 2.0 * self._args.get('bottom_inner_radius', 0.0)))
+        if self._bottom_inner_diameter is None:
+            self._bottom_inner_diameter = 2.0 * (self._bottom_inner_radius or 0.0)
+
+        return self._bottom_inner_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -231,10 +388,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the top inner profile of the cone. 
         """
-        if 'top_inner_profile' in self._args:
-            return self._args.get('top_inner_profile')
-
-        return RoughFactory()
+        return self._top_inner_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -242,10 +396,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the top outer profile of the cone. 
         """
-        if 'top_outer_profile' in self._args:
-            return self._args.get('top_outer_profile')
-
-        return RoughFactory()
+        return self._top_outer_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -253,10 +404,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom inner profile of the cone. 
         """
-        if 'bottom_inner_profile' in self._args:
-            return self._args.get('bottom_inner_profile')
-
-        return RoughFactory()
+        return self._bottom_inner_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -264,10 +412,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the bottom outer profile of the cone. 
         """
-        if 'bottom_outer_profile' in self._args:
-            return self._args.get('bottom_outer_profile')
-
-        return RoughFactory()
+        return self._bottom_outer_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -275,7 +420,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the height of the cone.
         """
-        return self.uc(self._args.get('height', 0.0))
+        return self._height
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -283,13 +428,11 @@ class SmoothCone(ScadWidget):
         """
         Returns the convexity.
         """
-        if 'convexity' in self._args:
-            return self._args['convexity']
+        if self._convexity is None:
+            if self.top_inner_radius != 0.0 or self.bottom_inner_radius != 0.0:
+                self._convexity = 2
 
-        if self.top_inner_radius != 0.0 and self.bottom_inner_radius != 0.0:
-            return 2
-
-        return None
+        return self._convexity
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -297,7 +440,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the minimum angle (in degrees) of each fragment.
         """
-        return self._args.get('fa')
+        return self._fa
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -305,7 +448,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the minimum circumferential length of each fragment.
         """
-        return self.uc(self._args.get('fs'))
+        return self._fs
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -313,25 +456,25 @@ class SmoothCone(ScadWidget):
         """
         Returns the fixed number of fragments in 360 degrees. Values of 3 or more override $fa and $fs.
         """
-        return self._args.get('fn')
+        return self._fn
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def fn4n(self) -> bool | None:
+    def fn4n(self) -> bool:
         """
         Returns whether to create a circle with multiple of 4 vertices.
         """
-        return self._args.get('fn4n')
+        return self._fn4n
 
     # ------------------------------------------------------------------------------------------------------------------
     def real_fn(self, context: Context) -> int | None:
         """
         Returns the real fixed number of fragments in 360 degrees.
         """
-        if self.fn4n:
+        if self._fn4n:
             return Radius2Sides4n.r2sides4n(context, max(self.bottom_outer_radius, self.top_outer_radius))
 
-        return self.fn
+        return self._fn
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -339,7 +482,7 @@ class SmoothCone(ScadWidget):
         """
         Returns the number of degrees to sweep, starting at the positive X axis.
         """
-        return self._args['rotate_extrude_angle']
+        return self._rotate_extrude_angle
 
     # ------------------------------------------------------------------------------------------------------------------
     def build(self, context: Context) -> ScadWidget:

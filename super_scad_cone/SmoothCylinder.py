@@ -1,6 +1,7 @@
 from super_scad.scad.ArgumentAdmission import ArgumentAdmission
 from super_scad.scad.Context import Context
 from super_scad.scad.ScadWidget import ScadWidget
+from super_scad.util.Radius2Sides4n import Radius2Sides4n
 from super_scad_smooth_profile.RoughFactory import RoughFactory
 from super_scad_smooth_profile.SmoothProfileFactory import SmoothProfileFactory
 
@@ -70,6 +71,117 @@ class SmoothCylinder(ScadWidget):
         """
         ScadWidget.__init__(self, args=locals())
 
+        self._height: float = height
+        """
+        The height of the cylinder.
+        """
+
+        self._radius: float | None = radius
+        """
+        The radius of the top of the cylinder.
+        """
+
+        self._diameter: float | None = diameter
+        """
+        The diameter of the top of the cylinder.
+        """
+
+        self._outer_radius: float | None = outer_radius
+        """
+        The radius of the top of the outer cylinder.
+        """
+
+        self._outer_diameter: float | None = outer_diameter
+        """
+        The diameter of the top of the outer cylinder.
+        """
+
+        self._inner_radius: float | None = inner_radius
+        """
+        The radius of the top of the inner cylinder.
+        """
+
+        self._inner_diameter: float | None = inner_diameter
+        """
+        The diameter of the top of the inner cylinder.
+        """
+
+        self._center: bool = center
+        """
+        Whether the cylinder is centered in the z-direction.
+        """
+
+        self._top_inner_profile: SmoothProfileFactory = top_inner_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the inner top of the cylinder.
+        """
+
+        self._top_outer_profile: SmoothProfileFactory = top_outer_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the outer top of the cylinder.
+        """
+
+        self._bottom_outer_profile: SmoothProfileFactory = bottom_outer_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the outer bottom of the cylinder.
+        """
+
+        self._bottom_inner_profile: SmoothProfileFactory = bottom_inner_profile or RoughFactory()
+        """
+        The profile factory of the smooth profile to be applied at the inner bottom of the cylinder.
+        """
+
+        self._top_extend_by_eps: bool = top_extend_by_eps
+        """
+        Whether to extend the top of the cylinder by eps for a clear overlap.
+        """
+
+        self._outer_extend_by_eps: bool = outer_extend_by_eps
+        """
+        Whether to extend the outer wall of the cylinder by eps for a clear overlap.
+        """
+
+        self._bottom_extend_by_eps: bool = bottom_extend_by_eps
+        """
+        Whether to extend the bottom of the cylinder by eps for a clear overlap.
+        """
+
+        self._inner_extend_by_eps: bool = inner_extend_by_eps
+        """
+        Whether to extend the inner wall of the cylinder by eps for a clear overlap.
+        """
+
+        self._rotate_extrude_angle: float = rotate_extrude_angle
+        """
+        Specifies the number of degrees to sweep, starting at the positive X axis.  The direction of the sweep follows
+        the Right-Hand Rule, hence a negative angle sweeps clockwise.
+        """
+
+        self._convexity: int | None = convexity
+        """
+        The convexity of the cylinder.
+        """
+
+        self._fa: float | None = fa
+        """
+        The minimum angle (in degrees) of each fragment.
+        """
+
+        self._fs: float | None = fs
+        """
+        The minimum circumferential length of each fragment.
+        """
+
+        self._fn: int | None = fn
+        """
+        The fixed number of fragments in 360 degrees. Values of 3 or more override fa and fs.
+        """
+
+        self._fn4n: bool = fn4n
+        """
+        Whether to create a cylinder with a multiple of 4 vertices.
+        """
+
     # ------------------------------------------------------------------------------------------------------------------
     def _validate_arguments(self) -> None:
         """
@@ -92,7 +204,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns whether the cylinder is centered along the z-as.
         """
-        return self._args['center']
+        return self._center
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -100,7 +212,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns whether the top of the cylinder is extended by eps.
         """
-        return self._args.get('top_extend_by_eps', False)
+        return self._top_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -108,7 +220,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns whether the outer wall of the cylinder is extended by eps.
         """
-        return self._args.get('outer_extend_by_eps', False)
+        return self._outer_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -116,7 +228,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns whether the bottom of the cylinder is extended (outwards) by eps.
         """
-        return self._args.get('bottom_extend_by_eps', False)
+        return self._bottom_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -124,7 +236,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns whether the inner wall of the cylinder is extended (inwards) by eps.
         """
-        return self._args.get('inner_extend_by_eps', False)
+        return self._inner_extend_by_eps
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -132,10 +244,11 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the top outer radius of the cylinder.
         """
-        return self.uc(self._args.get('outer_radius',
-                                      self._args.get('radius',
-                                                     0.5 * self._args.get('outer_diameter',
-                                                                          self._args.get('diameter', 0.0)))))
+        if self._outer_radius is None:
+            self._outer_radius = self._radius or \
+                                 0.5 * (self._outer_diameter or self._diameter or 0.0)
+
+        return self._outer_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -143,10 +256,11 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the top outer diameter of the cylinder.
         """
-        return self.uc(self._args.get('outer_diameter',
-                                      self._args.get('diameter',
-                                                     2.0 * self._args.get('outer_radius',
-                                                                          self._args.get('radius', 0.0)))))
+        if self._outer_diameter is None:
+            self._outer_diameter = self._diameter or \
+                                   2.0 * (self._outer_radius or self._radius or 0.0)
+
+        return self._outer_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -154,7 +268,10 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the top inner radius of the cylinder.
         """
-        return self.uc(self._args.get('inner_radius', 0.5 * self._args.get('inner_diameter', 0.0)))
+        if self._inner_radius is None:
+            self._inner_radius = 0.5 * (self._inner_diameter or 0.0)
+
+        return self._inner_radius
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -162,59 +279,50 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the top inner diameter of the cylinder.
         """
-        return self.uc(self._args.get('inner_diameter', 2.0 * self._args.get('inner_radius', 0.0)))
+        if self._inner_diameter is None:
+            self._inner_diameter = 2.0 * (self._inner_radius or 0.0)
+
+        return self._inner_diameter
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def top_inner_profile(self) -> SmoothProfileFactory:
         """
-        Returns the top inner profile of the cylinder. 
+        Returns the top inner profile of the cone.
         """
-        if 'top_inner_profile' in self._args:
-            return self._args.get('top_inner_profile')
-
-        return RoughFactory()
+        return self._top_inner_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def top_outer_profile(self) -> SmoothProfileFactory:
         """
-        Returns the top outer profile of the cylinder. 
+        Returns the top outer profile of the cone.
         """
-        if 'top_outer_profile' in self._args:
-            return self._args.get('top_outer_profile')
-
-        return RoughFactory()
+        return self._top_outer_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def bottom_inner_profile(self) -> SmoothProfileFactory:
         """
-        Returns the bottom inner profile of the cylinder. 
+        Returns the bottom inner profile of the cone.
         """
-        if 'bottom_inner_profile' in self._args:
-            return self._args.get('bottom_inner_profile')
-
-        return RoughFactory()
+        return self._bottom_inner_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def bottom_outer_profile(self) -> SmoothProfileFactory:
         """
-        Returns the bottom outer profile of the cylinder. 
+        Returns the bottom outer profile of the cone.
         """
-        if 'bottom_outer_profile' in self._args:
-            return self._args.get('bottom_outer_profile')
-
-        return RoughFactory()
+        return self._bottom_outer_profile
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def height(self) -> float:
         """
-        Returns the height of the cylinder.
+        Returns the height of the cone.
         """
-        return self.uc(self._args.get('height', 0.0))
+        return self._height
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -222,13 +330,11 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the convexity.
         """
-        if 'convexity' in self._args:
-            return self._args['convexity']
+        if self._convexity is None:
+            if self.inner_radius != 0.0:
+                self._convexity = 2
 
-        if self.inner_radius != 0.0:
-            return 2
-
-        return None
+        return self._convexity
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -236,7 +342,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the minimum angle (in degrees) of each fragment.
         """
-        return self._args.get('fa')
+        return self._fa
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -244,7 +350,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the minimum circumferential length of each fragment.
         """
-        return self.uc(self._args.get('fs'))
+        return self._fs
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -252,15 +358,25 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the fixed number of fragments in 360 degrees. Values of 3 or more override $fa and $fs.
         """
-        return self._args.get('fn')
+        return self._fn
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def fn4n(self) -> bool | None:
+    def fn4n(self) -> bool:
         """
         Returns whether to create a circle with multiple of 4 vertices.
         """
-        return self._args.get('fn4n')
+        return self._fn4n
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def real_fn(self, context: Context) -> int | None:
+        """
+        Returns the real fixed number of fragments in 360 degrees.
+        """
+        if self._fn4n:
+            return Radius2Sides4n.r2sides4n(context, self.outer_radius)
+
+        return self._fn
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -268,7 +384,7 @@ class SmoothCylinder(ScadWidget):
         """
         Returns the number of degrees to sweep, starting at the positive X axis.
         """
-        return self._args['rotate_extrude_angle']
+        return self._rotate_extrude_angle
 
     # ------------------------------------------------------------------------------------------------------------------
     def build(self, context: Context) -> ScadWidget:
