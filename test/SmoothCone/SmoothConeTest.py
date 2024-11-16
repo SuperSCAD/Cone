@@ -1,7 +1,7 @@
 from super_scad.scad.Context import Context
 from super_scad.scad.Scad import Scad
-from super_scad_smooth_profiles.ChamferFactory import ChamferFactory
-from super_scad_smooth_profiles.FilletFactory import FilletFactory
+from super_scad_smooth_profiles.InteriorChamferFactory import InteriorChamferFactory
+from super_scad_smooth_profiles.InteriorFilletFactory import InteriorFilletFactory
 
 from super_scad_cone.SmoothCone import SmoothCone
 from test.ScadTestCase import ScadTestCase
@@ -25,10 +25,10 @@ class SmoothConeTest(ScadTestCase):
                           top_inner_diameter=10.0,
                           bottom_outer_diameter=35.0,
                           bottom_inner_diameter=10.0,
-                          top_inner_profile=FilletFactory(radius=3.0),
-                          top_outer_profile=FilletFactory(radius=4.0),
-                          bottom_outer_profile=ChamferFactory(skew_length=5.0),
-                          bottom_inner_profile=ChamferFactory(skew_length=5.0),
+                          top_inner_profile=InteriorFilletFactory(radius=3.0),
+                          top_outer_profile=InteriorFilletFactory(radius=4.0),
+                          bottom_outer_profile=InteriorChamferFactory(skew_length=5.0),
+                          bottom_inner_profile=InteriorChamferFactory(skew_length=5.0),
                           rotate_extrude_angle=180.0)
 
         self.assertAlmostEqual(50.0, cone.height)
@@ -64,10 +64,10 @@ class SmoothConeTest(ScadTestCase):
                           top_inner_diameter=10.0,
                           bottom_outer_diameter=35.0,
                           bottom_inner_diameter=10.0,
-                          top_inner_profile=FilletFactory(radius=2.0),
-                          top_outer_profile=FilletFactory(radius=2.0),
-                          bottom_outer_profile=ChamferFactory(skew_length=2.0),
-                          bottom_inner_profile=ChamferFactory(skew_length=2.0),
+                          top_inner_profile=InteriorFilletFactory(radius=2.0),
+                          top_outer_profile=InteriorFilletFactory(radius=2.0),
+                          bottom_outer_profile=InteriorChamferFactory(skew_length=2.0),
+                          bottom_inner_profile=InteriorChamferFactory(skew_length=2.0),
                           top_extend_by_eps=True,
                           bottom_extend_by_eps=True,
                           rotate_extrude_angle=180.0)
