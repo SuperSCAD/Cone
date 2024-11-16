@@ -2,8 +2,8 @@ from super_scad.scad.ArgumentAdmission import ArgumentAdmission
 from super_scad.scad.Context import Context
 from super_scad.scad.ScadWidget import ScadWidget
 from super_scad.util.Radius2Sides4n import Radius2Sides4n
-from super_scad_smooth_profile.RoughFactory import RoughFactory
-from super_scad_smooth_profile.SmoothProfileFactory import SmoothProfileFactory
+from super_scad_smooth_profile.Rough import Rough
+from super_scad_smooth_profile.SmoothProfile import SmoothProfile
 
 from super_scad_cone.SmoothCone import SmoothCone
 
@@ -24,10 +24,10 @@ class SmoothCylinder(ScadWidget):
                  inner_radius: float | None = None,
                  inner_diameter: float | None = None,
                  center: bool = False,
-                 top_inner_profile: SmoothProfileFactory | None = None,
-                 top_outer_profile: SmoothProfileFactory | None = None,
-                 bottom_outer_profile: SmoothProfileFactory | None = None,
-                 bottom_inner_profile: SmoothProfileFactory | None = None,
+                 top_inner_profile: SmoothProfile | None = None,
+                 top_outer_profile: SmoothProfile | None = None,
+                 bottom_outer_profile: SmoothProfile | None = None,
+                 bottom_inner_profile: SmoothProfile | None = None,
                  top_extend_by_eps: bool | None = None,
                  outer_extend_by_eps: bool | None = None,
                  bottom_extend_by_eps: bool | None = None,
@@ -49,12 +49,10 @@ class SmoothCylinder(ScadWidget):
         :param inner_radius: The inner radius at the top of the cylinder.
         :param inner_diameter: The inner diameter at the top of the cylinder.
         :param center: Whether the cylinder is centered in the z-direction.
-        :param top_inner_profile: The profile factory of the smooth profile to be applied at the inner top of the cylinder.
-        :param top_outer_profile: The profile factory of the smooth profile to be applied at the outer top of the cylinder.
-        :param bottom_outer_profile: The profile factory of the smooth profile to be applied at the outer bottom of the
-                                     cylinder.
-        :param bottom_inner_profile: The profile factory of the smooth profile to be applied at the inner bottom of the
-                                     cylinder.
+        :param top_inner_profile: The profile to be applied at the inner top of the cylinder.
+        :param top_outer_profile: The profile to be applied at the outer top of the cylinder.
+        :param bottom_outer_profile: The profile to be applied at the outer bottom of the cylinder.
+        :param bottom_inner_profile: The profile to be applied at the inner bottom of the cylinder.
         :param top_extend_by_eps: Whether to extend the top of the cylinder by eps for a clear overlap.
         :param outer_extend_by_eps: Whether to extend the outer wall of the cylinder by eps for a clear overlap.
         :param bottom_extend_by_eps: Whether to extend the bottom of the cylinder by eps for a clear overlap.
@@ -111,24 +109,24 @@ class SmoothCylinder(ScadWidget):
         Whether the cylinder is centered in the z-direction.
         """
 
-        self._top_inner_profile: SmoothProfileFactory = top_inner_profile or RoughFactory()
+        self._top_inner_profile: SmoothProfile = top_inner_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the inner top of the cylinder.
-        """
-
-        self._top_outer_profile: SmoothProfileFactory = top_outer_profile or RoughFactory()
-        """
-        The profile factory of the smooth profile to be applied at the outer top of the cylinder.
+        The profile to be applied at the inner top of the cylinder.
         """
 
-        self._bottom_outer_profile: SmoothProfileFactory = bottom_outer_profile or RoughFactory()
+        self._top_outer_profile: SmoothProfile = top_outer_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the outer bottom of the cylinder.
+        The profile to be applied at the outer top of the cylinder.
         """
 
-        self._bottom_inner_profile: SmoothProfileFactory = bottom_inner_profile or RoughFactory()
+        self._bottom_outer_profile: SmoothProfile = bottom_outer_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the inner bottom of the cylinder.
+        The profile to be applied at the outer bottom of the cylinder.
+        """
+
+        self._bottom_inner_profile: SmoothProfile = bottom_inner_profile or Rough()
+        """
+        The profile to be applied at the inner bottom of the cylinder.
         """
 
         self._top_extend_by_eps: bool = top_extend_by_eps
@@ -286,7 +284,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_inner_profile(self) -> SmoothProfileFactory:
+    def top_inner_profile(self) -> SmoothProfile:
         """
         Returns the top inner profile of the cone.
         """
@@ -294,7 +292,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_outer_profile(self) -> SmoothProfileFactory:
+    def top_outer_profile(self) -> SmoothProfile:
         """
         Returns the top outer profile of the cone.
         """
@@ -302,7 +300,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_inner_profile(self) -> SmoothProfileFactory:
+    def bottom_inner_profile(self) -> SmoothProfile:
         """
         Returns the bottom inner profile of the cone.
         """
@@ -310,7 +308,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_outer_profile(self) -> SmoothProfileFactory:
+    def bottom_outer_profile(self) -> SmoothProfile:
         """
         Returns the bottom outer profile of the cone.
         """

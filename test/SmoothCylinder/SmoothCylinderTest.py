@@ -6,8 +6,8 @@ from super_scad.scad.Scad import Scad
 from super_scad.transformation.Paint import Paint
 from super_scad.transformation.Translate3D import Translate3D
 from super_scad.type.Color import Color
-from super_scad_smooth_profiles.ExteriorChamferFactory import ExteriorChamferFactory
-from super_scad_smooth_profiles.InteriorFilletFactory import InteriorFilletFactory
+from super_scad_smooth_profiles.Chamfer import Chamfer
+from super_scad_smooth_profiles.Fillet import Fillet
 
 from super_scad_cone.SmoothCylinder import SmoothCylinder
 from test.ScadTestCase import ScadTestCase
@@ -51,10 +51,10 @@ class SmoothCylinderTest(ScadTestCase):
         cylinder = SmoothCylinder(height=20.0,
                                   outer_diameter=25.0,
                                   inner_diameter=10.0,
-                                  top_inner_profile=InteriorFilletFactory(radius=3.0),
-                                  top_outer_profile=InteriorFilletFactory(radius=3.0),
-                                  bottom_outer_profile=InteriorFilletFactory(radius=3.0),
-                                  bottom_inner_profile=InteriorFilletFactory(radius=3.0),
+                                  top_inner_profile=Fillet(radius=3.0),
+                                  top_outer_profile=Fillet(radius=3.0),
+                                  bottom_outer_profile=Fillet(radius=3.0),
+                                  bottom_inner_profile=Fillet(radius=3.0),
                                   bottom_extend_by_eps=True,
                                   rotate_extrude_angle=180.0)
 
@@ -86,7 +86,7 @@ class SmoothCylinderTest(ScadTestCase):
 
         punch = SmoothCylinder(height=thickness,
                                diameter=10.0,
-                               top_outer_profile=ExteriorChamferFactory(skew_height=2.0, side=2),
+                               top_outer_profile=Chamfer(skew_height=2.0, side=2),
                                top_extend_by_eps=True,
                                bottom_extend_by_eps=True)
 

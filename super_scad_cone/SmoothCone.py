@@ -5,8 +5,8 @@ from super_scad.scad.ScadWidget import ScadWidget
 from super_scad.type import Vector2
 from super_scad.util.Radius2Sides4n import Radius2Sides4n
 from super_scad_polygon.SmoothPolygon import SmoothPolygon
-from super_scad_smooth_profile.RoughFactory import RoughFactory
-from super_scad_smooth_profile.SmoothProfileFactory import SmoothProfileFactory
+from super_scad_smooth_profile.Rough import Rough
+from super_scad_smooth_profile.SmoothProfile import SmoothProfile
 
 
 class SmoothCone(ScadWidget):
@@ -31,10 +31,10 @@ class SmoothCone(ScadWidget):
                  bottom_inner_radius: float | None = None,
                  bottom_inner_diameter: float | None = None,
                  center: bool = False,
-                 top_inner_profile: SmoothProfileFactory | None = None,
-                 top_outer_profile: SmoothProfileFactory | None = None,
-                 bottom_outer_profile: SmoothProfileFactory | None = None,
-                 bottom_inner_profile: SmoothProfileFactory | None = None,
+                 top_inner_profile: SmoothProfile | None = None,
+                 top_outer_profile: SmoothProfile | None = None,
+                 bottom_outer_profile: SmoothProfile | None = None,
+                 bottom_inner_profile: SmoothProfile | None = None,
                  top_extend_by_eps: bool = False,
                  outer_extend_by_eps: bool = False,
                  bottom_extend_by_eps: bool = False,
@@ -62,12 +62,10 @@ class SmoothCone(ScadWidget):
         :param bottom_inner_radius: The radius at the bottom of the inner cone.
         :param bottom_inner_diameter: The diameter at the bottom of the inner cone.
         :param center: Whether the cylinder is centered in the z-direction.
-        :param top_inner_profile: The profile factory of the smooth profile to be applied at the inner top of the cone.
-        :param top_outer_profile: The profile factory of the smooth profile to be applied at the outer top of the cone.
-        :param bottom_outer_profile: The profile factory of the smooth profile to be applied at the outer bottom of the
-                                     cone.
-        :param bottom_inner_profile: The profile factory of the smooth profile to be applied at the inner bottom of the
-                                     cone.
+        :param top_inner_profile: The profile to be applied at the inner top of the cone.
+        :param top_outer_profile: The profile to be applied at the outer top of the cone.
+        :param bottom_outer_profile: The profile to be applied at the outer bottom of the cone.
+        :param bottom_inner_profile: The profile to be applied at the inner bottom of the cone.
         :param top_extend_by_eps: Whether to extend the top of the cone by eps for a clear overlap.
         :param outer_extend_by_eps: Whether to extend the outer wall of the cone by eps for a clear overlap.
         :param bottom_extend_by_eps: Whether to extend the bottom of the cone by eps for a clear overlap.
@@ -154,24 +152,24 @@ class SmoothCone(ScadWidget):
         Whether the cylinder is centered in the z-direction.
         """
 
-        self._top_inner_profile: SmoothProfileFactory = top_inner_profile or RoughFactory()
+        self._top_inner_profile: SmoothProfile = top_inner_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the inner top of the cone.
-        """
-
-        self._top_outer_profile: SmoothProfileFactory = top_outer_profile or RoughFactory()
-        """
-        The profile factory of the smooth profile to be applied at the outer top of the cone.
+        The profile to be applied at the inner top of the cone.
         """
 
-        self._bottom_outer_profile: SmoothProfileFactory = bottom_outer_profile or RoughFactory()
+        self._top_outer_profile: SmoothProfile = top_outer_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the outer bottom of the cone.
+        The profile to be applied at the outer top of the cone.
         """
 
-        self._bottom_inner_profile: SmoothProfileFactory = bottom_inner_profile or RoughFactory()
+        self._bottom_outer_profile: SmoothProfile = bottom_outer_profile or Rough()
         """
-        The profile factory of the smooth profile to be applied at the inner bottom of the cone.
+        The profile to be applied at the outer bottom of the cone.
+        """
+
+        self._bottom_inner_profile: SmoothProfile = bottom_inner_profile or Rough()
+        """
+        The profile to be applied at the inner bottom of the cone.
         """
 
         self._top_extend_by_eps: bool = top_extend_by_eps
@@ -384,7 +382,7 @@ class SmoothCone(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_inner_profile(self) -> SmoothProfileFactory:
+    def top_inner_profile(self) -> SmoothProfile:
         """
         Returns the top inner profile of the cone. 
         """
@@ -392,7 +390,7 @@ class SmoothCone(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_outer_profile(self) -> SmoothProfileFactory:
+    def top_outer_profile(self) -> SmoothProfile:
         """
         Returns the top outer profile of the cone. 
         """
@@ -400,7 +398,7 @@ class SmoothCone(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_inner_profile(self) -> SmoothProfileFactory:
+    def bottom_inner_profile(self) -> SmoothProfile:
         """
         Returns the bottom inner profile of the cone. 
         """
@@ -408,7 +406,7 @@ class SmoothCone(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_outer_profile(self) -> SmoothProfileFactory:
+    def bottom_outer_profile(self) -> SmoothProfile:
         """
         Returns the bottom outer profile of the cone. 
         """
@@ -503,10 +501,10 @@ class SmoothCone(ScadWidget):
                                          Vector2(self.top_outer_radius, top_height),
                                          Vector2(self.bottom_outer_radius, bottom_height),
                                          Vector2(bottom_inner_radius, bottom_height)],
-                                profile_factories=[self.top_inner_profile,
-                                                   self.top_outer_profile,
-                                                   self.bottom_outer_profile,
-                                                   self.bottom_inner_profile],
+                                profiles=[self.top_inner_profile,
+                                          self.top_outer_profile,
+                                          self.bottom_outer_profile,
+                                          self.bottom_inner_profile],
                                 extend_sides_by_eps=[self.top_extend_by_eps,
                                                      self.outer_extend_by_eps,
                                                      self.bottom_extend_by_eps,
