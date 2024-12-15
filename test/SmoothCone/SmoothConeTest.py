@@ -19,7 +19,7 @@ class SmoothConeTest(ScadTestCase):
         """
         path_actual, path_expected = self.paths()
 
-        scad = Scad(context=Context(fs=0.1, fa=1.0, eps=0.1))
+        scad = Scad(context=Context(fn=60, eps=0.1))
         cone = SmoothCone(height=50.0,
                           top_outer_diameter=25.0,
                           top_inner_diameter=10.0,
@@ -58,7 +58,7 @@ class SmoothConeTest(ScadTestCase):
         """
         path_actual, path_expected = self.paths()
 
-        scad = Scad(context=Context(fs=0.1, fa=1.0, eps=0.1))
+        scad = Scad(context=Context(fn=60, eps=0.1))
         cone = SmoothCone(height=10.0,
                           top_outer_diameter=25.0,
                           top_inner_diameter=10.0,

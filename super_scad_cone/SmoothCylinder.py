@@ -1,9 +1,11 @@
-from super_scad.scad.ArgumentAdmission import ArgumentAdmission
+from typing import Any, Dict
+
+from super_scad.scad.ArgumentValidator import ArgumentValidator
 from super_scad.scad.Context import Context
 from super_scad.scad.ScadWidget import ScadWidget
 from super_scad.util.Radius2Sides4n import Radius2Sides4n
 from super_scad_smooth_profile.Rough import Rough
-from super_scad_smooth_profile.SmoothProfile import SmoothProfile
+from super_scad_smooth_profile.SmoothProfile2D import SmoothProfile2D
 
 from super_scad_cone.SmoothCone import SmoothCone
 
@@ -24,10 +26,10 @@ class SmoothCylinder(ScadWidget):
                  inner_radius: float | None = None,
                  inner_diameter: float | None = None,
                  center: bool = False,
-                 top_inner_profile: SmoothProfile | None = None,
-                 top_outer_profile: SmoothProfile | None = None,
-                 bottom_outer_profile: SmoothProfile | None = None,
-                 bottom_inner_profile: SmoothProfile | None = None,
+                 top_inner_profile: SmoothProfile2D | None = None,
+                 top_outer_profile: SmoothProfile2D | None = None,
+                 bottom_outer_profile: SmoothProfile2D | None = None,
+                 bottom_inner_profile: SmoothProfile2D | None = None,
                  top_extend_by_eps: bool | None = None,
                  outer_extend_by_eps: bool | None = None,
                  bottom_extend_by_eps: bool | None = None,
@@ -67,7 +69,7 @@ class SmoothCylinder(ScadWidget):
         :param fn: The fixed number of fragments in 360 degrees. Values of 3 or more override fa and fs.
         :param fn4n: Whether to create a cylinder with a multiple of 4 vertices.
         """
-        ScadWidget.__init__(self, args=locals())
+        ScadWidget.__init__(self)
 
         self._height: float = height
         """
@@ -109,22 +111,22 @@ class SmoothCylinder(ScadWidget):
         Whether the cylinder is centered in the z-direction.
         """
 
-        self._top_inner_profile: SmoothProfile = top_inner_profile or Rough()
+        self._top_inner_profile: SmoothProfile2D = top_inner_profile or Rough()
         """
         The profile to be applied at the inner top of the cylinder.
         """
 
-        self._top_outer_profile: SmoothProfile = top_outer_profile or Rough()
+        self._top_outer_profile: SmoothProfile2D = top_outer_profile or Rough()
         """
         The profile to be applied at the outer top of the cylinder.
         """
 
-        self._bottom_outer_profile: SmoothProfile = bottom_outer_profile or Rough()
+        self._bottom_outer_profile: SmoothProfile2D = bottom_outer_profile or Rough()
         """
         The profile to be applied at the outer bottom of the cylinder.
         """
 
-        self._bottom_inner_profile: SmoothProfile = bottom_inner_profile or Rough()
+        self._bottom_inner_profile: SmoothProfile2D = bottom_inner_profile or Rough()
         """
         The profile to be applied at the inner bottom of the cylinder.
         """
@@ -180,16 +182,19 @@ class SmoothCylinder(ScadWidget):
         Whether to create a cylinder with a multiple of 4 vertices.
         """
 
+        self.__validate_arguments(locals())
+
     # ------------------------------------------------------------------------------------------------------------------
-    def _validate_arguments(self) -> None:
+    @staticmethod
+    def __validate_arguments(args: Dict[str, Any]) -> None:
         """
         Validates the arguments supplied to the constructor of this SuperSCAD widget.
         """
-        admission = ArgumentAdmission(self._args)
-        admission.validate_exclusive({'radius', 'diameter'},
+        validator = ArgumentValidator(args)
+        validator.validate_exclusive({'radius', 'diameter'},
                                      {'inner_radius', 'outer_radius'},
                                      {'inner_diameter', 'outer_diameter'})
-        admission.validate_required({'height'},
+        validator.validate_required({'height'},
                                     {'radius',
                                      'diameter',
                                      'outer_radius',
@@ -284,7 +289,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_inner_profile(self) -> SmoothProfile:
+    def top_inner_profile(self) -> SmoothProfile2D:
         """
         Returns the top inner profile of the cone.
         """
@@ -292,7 +297,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_outer_profile(self) -> SmoothProfile:
+    def top_outer_profile(self) -> SmoothProfile2D:
         """
         Returns the top outer profile of the cone.
         """
@@ -300,7 +305,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_inner_profile(self) -> SmoothProfile:
+    def bottom_inner_profile(self) -> SmoothProfile2D:
         """
         Returns the bottom inner profile of the cone.
         """
@@ -308,7 +313,7 @@ class SmoothCylinder(ScadWidget):
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def bottom_outer_profile(self) -> SmoothProfile:
+    def bottom_outer_profile(self) -> SmoothProfile2D:
         """
         Returns the bottom outer profile of the cone.
         """

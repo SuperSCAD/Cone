@@ -23,7 +23,7 @@ class SmoothCylinderTest(ScadTestCase):
         """
         Test with a plain cylinder.
         """
-        scad = Scad(context=Context(fs=0.1, fa=1.0, eps=0.1))
+        scad = Scad(context=Context(fn=60, eps=0.1))
         cylinder = SmoothCylinder(height=50.0, diameter=5.0)
 
         self.assertAlmostEqual(50.0, cylinder.height)
@@ -47,7 +47,7 @@ class SmoothCylinderTest(ScadTestCase):
         """
         Test with a plain cylinder.
         """
-        scad = Scad(context=Context(fs=0.1, fa=1.0, eps=0.1))
+        scad = Scad(context=Context(fn=60, eps=0.1))
         cylinder = SmoothCylinder(height=20.0,
                                   outer_diameter=25.0,
                                   inner_diameter=10.0,
@@ -79,7 +79,7 @@ class SmoothCylinderTest(ScadTestCase):
         """
         Test with creating a hole in a punch.
         """
-        scad = Scad(context=Context(fs=0.1, fa=1.0))
+        scad = Scad(context=Context(fn=60))
 
         thickness = 15.0
         material = Cuboid(width=100.0, depth=50.0, height=thickness)
