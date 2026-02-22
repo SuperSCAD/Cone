@@ -21,8 +21,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.13.0"
-super-scad = "^0.11.2"
-super-scad-polygon = "^0.9.7"
+super-scad = "^0.11.7"
+super-scad-polygon = "^0.9.9"
 super-scad-smooth-profile = "^0.6.2"
 
 [tool.poetry.group.dev.dependencies]
