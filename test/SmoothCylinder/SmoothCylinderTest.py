@@ -6,6 +6,7 @@ from super_scad.scad.Scad import Scad
 from super_scad.transformation.Paint import Paint
 from super_scad.transformation.Translate3D import Translate3D
 from super_scad.type.Color import Color
+from super_scad_smooth_profile.EdgeOrder import EdgeOrder
 from super_scad_smooth_profiles.Chamfer import Chamfer
 from super_scad_smooth_profiles.Fillet import Fillet
 
@@ -86,7 +87,7 @@ class SmoothCylinderTest(ScadTestCase):
 
         punch = SmoothCylinder(height=thickness,
                                diameter=10.0,
-                               top_outer_profile=Chamfer(skew_height=2.0, side=2),
+                               top_outer_profile=Chamfer(skew_height=2.0, side=EdgeOrder.SUCCEEDING),
                                top_extend_by_eps=True,
                                bottom_extend_by_eps=True)
 

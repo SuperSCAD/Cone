@@ -22,12 +22,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.13.0"
 super-scad = "^0.11.7"
-super-scad-polygon = "^0.9.9"
-super-scad-smooth-profile = "^0.6.2"
+super-scad-polygon = "^0.9.11"
+super-scad-smooth-profile = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.8.0"
-super-scad-smooth-profiles = "^0.6.1"
+super-scad-smooth-profiles = "^0.7.0"
 
 [build-system]
 requires = ["poetry-core"]
